@@ -233,7 +233,7 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
               "Enjoyment Rating": Number(payload.submission.enjoyment),
               //   Strength: payload.submission.strength,
               //   Weakness: payload.submission.weakness,
-              "Student Link": student_link,
+              //   "Student Link": student_link,
             },
           },
         ],
