@@ -17,7 +17,7 @@ require("dotenv").config();
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID_PROD = process.env.AIRTABLE_BASE_ID_PROD;
 const SLACK_BOT_TOKEN_HCCOMMUNITY = process.env.SLACK_BOT_TOKEN_HCCOMMUNITY;
-const COURSES_TABLE_NAME = "Courses";
+const TABLE_NAME = "Launch Students";
 
 const { WebClient } = require("@slack/web-api");
 const web = new WebClient(SLACK_BOT_TOKEN_HCCOMMUNITY);
@@ -39,33 +39,33 @@ const wait = (milliseconds) => {
 };
 
 const scheduleMessages = async () => {
-  const courses = [];
+  const trackInfo = [];
+  const survey_date = Date.now();
 
-  await base(COURSES_TABLE_NAME)
+  await base(TABLE_NAME)
     .select({
-      fields: ["Course Title", "Slack ID", "Survey Datetime"],
-      filterByFormula:
-        "AND(NOT({Course Title} = ''), NOT({Slack ID} = ''), NOT({Survey Datetime} = ''))",
+      fields: ["Track", "Slack ID"],
+      view: "Camille View",
+      filterByFormula: "AND(NOT({Track} = ''), NOT({Slack ID} = '')",
     })
 
     //retrieve the relevant data for each course
     .eachPage((records, fetchNextPage) => {
       records.forEach((record) => {
-        const course_data = {
-          course_title: record.get("Course Title"),
+        const studentData = {
+          trackTitle: record.get("Track"),
           student_slack_ids: record.get("Slack ID"),
-          survey_date: record.get("Survey Datetime"),
         };
-        courses.push(course_data);
+        trackInfo.push(studentData);
       });
       fetchNextPage();
     })
 
     .then(() => {
-      courses.forEach((course) => {
-        const course_title = course.course_title;
-        const slack_ids = course.student_slack_ids;
-        const message_date = new Date(course.survey_date); //watch out for DST
+      trackInfo.forEach((track) => {
+        const track = track.trackTitle;
+        const slack_ids = track.student_slack_ids;
+        const message_date = new Date(survey_date); //watch out for DST
 
         slack_ids.forEach((user_id) => {
           const message_date_epoch_secs = message_date.getTime() / 1000;
@@ -81,7 +81,8 @@ const scheduleMessages = async () => {
             as_user: false, //make this true for message to appear in feedbackbot DM
             attachments: [
               {
-                text: `Hi <@${user_id}>, I'm Andrew. I collect feedback from HC students so we can learn how to continue improving your course. Can you take 20 secs to let me know how ${course_title} went today?`,
+                text: `Hi <@${user_id}>, I'm Andrew. I collect feedback from HC students. We want to make your Launch
+                    experience the best possible. Could you please take ~20 sec to say how ${track} went today?`,
                 callback_id: "feedback_form_open",
                 color: "#3149EC",
                 attachment_type: "default",
@@ -103,7 +104,7 @@ const scheduleMessages = async () => {
               .scheduleMessage(scheduled_bot_message)
               .then(() => {
                 console.log(
-                  `Message scheduled for ${user_id} in ${course_title} at ${datestring}`
+                  `Message scheduled for ${user_id} in ${track} at ${datestring}`
                 );
                 wait(1000); //wait 1 second between each message schedule to avoid rate limiting
               })

@@ -42,6 +42,7 @@ app.listen(port, () => {
   console.log(`Listening for actions/events on port ${port}...`);
 });
 
+//the following message is for testing in the tech-team slack group
 //https://api.slack.com/events/app_mention
 slackEvents.on("app_mention", (event) => {
   //template for message with button to survey
