@@ -195,7 +195,6 @@ slackInteractions.action({ type: "button" }, (payload) => {
 slackInteractions.action({ type: "dialog_submission" }, (payload) => {
   //retrieve student records from Airtable
   var student_name = "";
-  var student_track = "";
   var student_link = [];
   base("Launch Students")
     .select({
@@ -203,13 +202,21 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
       view: "Grid view - don't touch",
       filterByFormula: "{Slack ID}= '" + payload.user.id + "'",
     })
-    .eachPage((records, fetchNextPage) => {
-      records.forEach((record) => {
-        student_name = record.get("Student Name");
-        student_link.push(record.id);
-      });
-      fetchNextPage();
-    })
+    .eachPage(
+      (records, fetchNextPage) => {
+        records.forEach((record) => {
+          student_name = record.get("Student Name");
+          student_link.push(record.id);
+        });
+        fetchNextPage();
+      },
+      (done = (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      })
+    )
     .then(() => {
       //record the dialog response in Airtable
       base(TABLE_NAME).create(
