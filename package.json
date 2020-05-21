@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/hackcville/Launch-Slackbot#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "heroku": "^7.41.1"
   }
 }
