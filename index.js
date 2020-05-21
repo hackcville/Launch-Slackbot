@@ -75,7 +75,7 @@ slackEvents.on("app_mention", (event) => {
     const res = await web.chat
       .postMessage(bot_feedback_message)
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   })();
 });
@@ -187,7 +187,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
   (async () => {
     //https://api.slack.com/methods/dialog.open
     const res = await web.dialog.open(feedback_dialog).catch((err) => {
-      console.log(err);
+      console.error(err);
     });
   })();
 });
@@ -258,7 +258,7 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
     const res = await web.chat
       .postMessage(bot_response_message)
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   })();
 });
