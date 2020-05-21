@@ -18,7 +18,7 @@ const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID_LIVE;
-const TABLE_NAME = "Spring 2020 Slackbot Feedback";
+const TABLE_NAME = "Launch 2020 Student Feedback";
 
 const Airtable = require("airtable");
 const base = new Airtable({ apiKey: AIRTABLE_API_KEY }).base(AIRTABLE_BASE_ID);
@@ -52,7 +52,8 @@ slackEvents.on("app_mention", (event) => {
     link_names: true,
     attachments: [
       {
-        text: "Would you mind giving us some feedback?",
+        text:
+          "We want to make your Launch experience the best possible. Could you please answer a few questions?",
         callback_id: "feedback_form_open",
         color: "#3149EC",
         attachment_type: "default",
@@ -92,7 +93,33 @@ slackInteractions.action({ type: "button" }, (payload) => {
           label: "The pace of the material so far has been...",
           type: "select",
           name: "pace",
-          placeholder: "1-5, 5 = Too fast, 1 = Too slow",
+          placeholder: "1-5, 1 = Too slow, 5 = Too fast",
+          options: [
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4", value: 4 },
+            { label: "5", value: 5 },
+          ],
+        },
+        {
+          label: "The combo of lecture and reading materials has been...",
+          type: "select",
+          name: "combo",
+          placeholder: "1-5, 1 = Too much lecture, 5 = Too much reading",
+          options: [
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4", value: 4 },
+            { label: "5", value: 5 },
+          ],
+        },
+        {
+          label: "The lecture length has been...",
+          type: "select",
+          name: "lecture",
+          placeholder: "1-5, 1 = Too long, 5 = Too short",
           options: [
             { label: "1", value: 1 },
             { label: "2", value: 2 },
@@ -105,7 +132,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
           label: "My own understanding of the material is...",
           type: "select",
           name: "understanding",
-          placeholder: "1-5, 5 = I could teach this, 1 = I'm totally lost",
+          placeholder: "1-5, 1 = I'm totally lost, 5 = I could teach this,",
           options: [
             { label: "1", value: 1 },
             { label: "2", value: 2 },
@@ -115,7 +142,20 @@ slackInteractions.action({ type: "button" }, (payload) => {
           ],
         },
         {
-          label: "How are you enjoying the course?",
+          label: "My group has been working together...",
+          type: "select",
+          name: "group",
+          placeholder: "1-5, 1 = horribly, 5 = perfectly",
+          options: [
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4", value: 4 },
+            { label: "5", value: 5 },
+          ],
+        },
+        {
+          label: "How much are you enjoying Launch?",
           type: "select",
           name: "enjoyment",
           placeholder: "1-5, 5 = I’m loving it, 1 = I’m hating it",
@@ -128,10 +168,16 @@ slackInteractions.action({ type: "button" }, (payload) => {
           ],
         },
         {
-          label: "How can we improve your experience?",
+          label: "I feel strong on...",
           type: "textarea",
-          name: "feedback",
-          hint: "Tell us what you think...",
+          name: "strength",
+          hint: "Be honest :)",
+        },
+        {
+          label: "I feel weak/confused about...",
+          type: "textarea",
+          name: "weakness",
+          hint: "Be honest :)",
         },
       ],
     }),
@@ -148,9 +194,9 @@ slackInteractions.action({ type: "button" }, (payload) => {
 slackInteractions.action({ type: "dialog_submission" }, (payload) => {
   //retrieve student records from Airtable
   var student_name = "";
-  var student_course = "";
+  var student_track = "";
   var student_link = [];
-  base("Spring 2020 Students")
+  base("Launch Students")
     .select({
       maxRecords: 1,
       view: "Grid view - don't touch",
@@ -158,14 +204,13 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
     })
     .eachPage((records, fetchNextPage) => {
       records.forEach((record) => {
-        student_name = record.get("Full Name");
+        student_name = record.get("Student Name");
         student_link.push(record.id);
       });
       fetchNextPage();
     })
     .then(() => {
       //record the dialog response in Airtable
-      console.log("student course is ", student_course);
       base(TABLE_NAME).create(
         [
           {
@@ -173,11 +218,14 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
               Name: student_name,
               SlackID: payload.user.id,
               "Pace Rating": Number(payload.submission.pace),
+              "Lecture/Reading Rating": Number(payload.submission.combo),
+              "Lecture Length Rating": Number(payload.submission.lecture),
               "Understanding Rating": Number(payload.submission.understanding),
+              "Group Rating": Number(payload.submission.group),
               "Enjoyment Rating": Number(payload.submission.enjoyment),
-              Feedback: payload.submission.feedback,
+              Strength: payload.submission.strength,
+              Weakness: payload.submission.weakness,
               "Student Link": student_link,
-              Week: getWeekNumber(),
             },
           },
         ],
@@ -206,10 +254,3 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
       });
   })();
 });
-
-getWeekNumber = () => {
-  const startDate = Date.UTC(2020, 0, 26);
-  const today = Date.now();
-  let weeksBetween = Math.floor((today - startDate) / 604800000); //604,800,000 is the number of milliseconds per week
-  return weeksBetween + 1;
-};
