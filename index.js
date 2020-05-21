@@ -199,7 +199,7 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
   base("Launch Students")
     .select({
       maxRecords: 1,
-      view: "Grid view - don't touch",
+      view: "Camille View",
       filterByFormula: "{Slack ID}= '" + payload.user.id + "'",
     })
     .eachPage(
