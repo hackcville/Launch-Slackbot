@@ -1,0 +1,19 @@
+{
+  "name": "launch-slack-feedback",
+  "version": "1.0.0",
+  "description": "Launch feedbackbot is a Node.js app that uses the Slack API to send messages to current launch students in each track (SWE, adv SWE, data, adv Data, BizDev, Digital Marketing) to help the instructors improve the communication between them and the studtdents and to gather data that will help better the lessons and keep the Launch students on track to succeed at their summer internships/future careers in their field.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hackcville/Launch-Slackbot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hackcville/Launch-Slackbot/issues"
+  },
+  "homepage": "https://github.com/hackcville/Launch-Slackbot#readme"
+}
