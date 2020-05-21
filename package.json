@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/hackcville/Launch-Slackbot/issues"
   },
-  "homepage": "https://github.com/hackcville/Launch-Slackbot#readme"
+  "homepage": "https://github.com/hackcville/Launch-Slackbot#readme",
+  "dependencies": {
+    "heroku": "^7.41.1"
+  }
 }
