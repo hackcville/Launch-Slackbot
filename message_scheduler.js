@@ -39,80 +39,72 @@ const wait = (milliseconds) => {
 };
 
 const scheduleMessages = async () => {
-  const trackInfo = [];
-  const survey_date = Date.now();
+  const EveryStudentInfo = [];
+  const messageTime = new Date("2020-05-22T20:23:00Z");
 
   await base(TABLE_NAME)
     .select({
       fields: ["Track", "Slack ID"],
       view: "Camille View",
-      filterByFormula: "AND(NOT({Track} = ''), NOT({Slack ID} = '')",
+      filterByFormula:
+        "AND(NOT({Track} = ''), NOT({Slack ID} = ''), {Slack ID} = 'UETEHA6NN' )",
     })
-
-    //retrieve the relevant data for each course
+    //collect all the slack ids with its corresponding track
     .eachPage((records, fetchNextPage) => {
       records.forEach((record) => {
-        const studentData = {
-          trackTitle: record.get("Track"),
-          student_slack_ids: record.get("Slack ID"),
+        const individualStudentInfo = {
+          track: record.get("Track"),
+          slackId: record.get("Slack ID"),
         };
-        trackInfo.push(studentData);
+        EveryStudentInfo.push(individualStudentInfo);
       });
       fetchNextPage();
     })
-
     .then(() => {
-      trackInfo.forEach((track) => {
-        const track = track.trackTitle;
-        const slack_ids = track.student_slack_ids;
-        const message_date = new Date(survey_date); //watch out for DST
+      EveryStudentInfo.forEach((student) => {
+        const message_date_epoch_secs = messageTime.getTime() / 1000;
+        const datestring = messageTime.toLocaleString(); //schedule date of current message so it doesn't get lost in async
+        messageTime.setSeconds(messageTime.getSeconds() + 2); //increment the time when the next message is schedule for
 
-        slack_ids.forEach((user_id) => {
-          const message_date_epoch_secs = message_date.getTime() / 1000;
-          const datestring = message_date.toLocaleString(); //schedule date of current message so it doesn't get lost in async
-          message_date.setSeconds(message_date.getSeconds() + 2); //increment the time when the next message is schedule for
+        //scheduled message containing link to feedback form
+        const scheduled_bot_message = {
+          token: SLACK_BOT_TOKEN_HCCOMMUNITY,
+          channel: student.slackId,
+          post_at: message_date_epoch_secs,
+          link_names: true,
+          as_user: false, //make this true for message to appear in feedbackbot DM
+          attachments: [
+            {
+              text: `Hi <@${student.slackId}>, I'm Andrew. I collect feedback from HC students. We want to make your Launch experience the best possible. Could you please take ~20 sec to say how ${student.track} went today?`,
+              callback_id: "feedback_form_open",
+              color: "#3149EC",
+              attachment_type: "default",
+              actions: [
+                {
+                  name: "feedback_button",
+                  text: "Begin Survey!",
+                  type: "button",
+                  value: "feedback",
+                },
+              ],
+            },
+          ],
+        };
 
-          //scheduled message containing link to feedback form
-          const scheduled_bot_message = {
-            token: SLACK_BOT_TOKEN_HCCOMMUNITY,
-            channel: user_id,
-            post_at: message_date_epoch_secs,
-            link_names: true,
-            as_user: false, //make this true for message to appear in feedbackbot DM
-            attachments: [
-              {
-                text: `Hi <@${user_id}>, I'm Andrew. I collect feedback from HC students. We want to make your Launch
-                    experience the best possible. Could you please take ~20 sec to say how ${track} went today?`,
-                callback_id: "feedback_form_open",
-                color: "#3149EC",
-                attachment_type: "default",
-                actions: [
-                  {
-                    name: "feedback_button",
-                    text: "Begin Survey!",
-                    type: "button",
-                    value: "feedback",
-                  },
-                ],
-              },
-            ],
-          };
-
-          (async () => {
-            //https://api.slack.com/methods/chat.scheduleMessage
-            await web.chat
-              .scheduleMessage(scheduled_bot_message)
-              .then(() => {
-                console.log(
-                  `Message scheduled for ${user_id} in ${track} at ${datestring}`
-                );
-                wait(1000); //wait 1 second between each message schedule to avoid rate limiting
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          })();
-        });
+        (async () => {
+          //https://api.slack.com/methods/chat.scheduleMessage
+          await web.chat
+            .scheduleMessage(scheduled_bot_message)
+            .then(() => {
+              console.log(
+                `Message scheduled for ${student.slackId} in ${student.track} at ${datestring}`
+              );
+              wait(1000); //wait 1 second between each message schedule to avoid rate limiting
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })();
       });
     })
 
