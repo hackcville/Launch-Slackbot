@@ -4,4 +4,8 @@ Launch feedbackbot is a Node.js app that uses the Slack API to send messages to 
 
 The survey will be sent of for quick daily feedback.
 
+This repo includes files included to assist with future debugging and modifications.
+
+Deployed on Heroku @ hcfeedbackbot.herokuapp.com
+
 Made by Camille Cooper for HackCville, Inc (May 2020)

@@ -142,19 +142,19 @@ slackInteractions.action({ type: "button" }, (payload) => {
             { label: "5", value: 5 },
           ],
         },
-        // {
-        //   label: "My group has been working together...",
-        //   type: "select",
-        //   name: "group",
-        //   placeholder: "1-5, 1 = horribly, 5 = perfectly",
-        //   options: [
-        //     { label: "1", value: 1 },
-        //     { label: "2", value: 2 },
-        //     { label: "3", value: 3 },
-        //     { label: "4", value: 4 },
-        //     { label: "5", value: 5 },
-        //   ],
-        // },
+        {
+          label: "My group has been working together...",
+          type: "select",
+          name: "group",
+          placeholder: "1-5, 1 = horribly, 5 = perfectly",
+          options: [
+            { label: "1", value: 1 },
+            { label: "2", value: 2 },
+            { label: "3", value: 3 },
+            { label: "4", value: 4 },
+            { label: "5", value: 5 },
+          ],
+        },
         {
           label: "How much are you enjoying Launch?",
           type: "select",
@@ -168,18 +168,18 @@ slackInteractions.action({ type: "button" }, (payload) => {
             { label: "5", value: 5 },
           ],
         },
-        // {
-        //   label: "I feel strong on...",
-        //   type: "textarea",
-        //   name: "strength",
-        //   hint: "Be honest :)",
-        // },
-        // {
-        //   label: "I feel weak/confused about...",
-        //   type: "textarea",
-        //   name: "weakness",
-        //   hint: "Be honest :)",
-        // },
+        {
+          label: "I feel strong on...",
+          type: "textarea",
+          name: "strength",
+          hint: "Be honest :)",
+        },
+        {
+          label: "I feel weak/confused about...",
+          type: "textarea",
+          name: "weakness",
+          hint: "Be honest :)",
+        },
       ],
     }),
   };
@@ -202,21 +202,13 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
       view: "Camille View",
       filterByFormula: "{Slack ID}= '" + payload.user.id + "'",
     })
-    .eachPage(
-      (records, fetchNextPage) => {
-        records.forEach((record) => {
-          student_name = record.get("Student Name");
-          student_link.push(record.id);
-        });
-        fetchNextPage();
-      },
-      (done = (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      })
-    )
+    .eachPage((records, fetchNextPage) => {
+      records.forEach((record) => {
+        student_name = record.get("Student Name");
+        student_link.push(record.id);
+      });
+      fetchNextPage();
+    })
     .then(() => {
       //record the dialog response in Airtable
       base(TABLE_NAME).create(
@@ -229,11 +221,11 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
               "Lecture/Reading Rating": Number(payload.submission.combo),
               "Lecture Length Rating": Number(payload.submission.lecture),
               "Understanding Rating": Number(payload.submission.understanding),
-              // "Group Rating": Number(payload.submission.group),
+              "Group Rating": Number(payload.submission.group),
               "Enjoyment Rating": Number(payload.submission.enjoyment),
-              //   Strength: payload.submission.strength,
-              //   Weakness: payload.submission.weakness,
-              //   "Student Link": student_link,
+              Strength: payload.submission.strength,
+              Weakness: payload.submission.weakness,
+              "Student Link": student_link,
             },
           },
         ],
