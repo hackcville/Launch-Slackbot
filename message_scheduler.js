@@ -40,14 +40,14 @@ const wait = (milliseconds) => {
 
 const scheduleMessages = async () => {
   const EveryStudentInfo = [];
-  const messageTime = new Date("2020-05-22T20:23:00Z");
+  const messageTime = new Date("2020-05-22T20:27:00Z");
 
   await base(TABLE_NAME)
     .select({
       fields: ["Track", "Slack ID"],
       view: "Camille View",
       filterByFormula:
-        "AND(NOT({Track} = ''), NOT({Slack ID} = ''), {Slack ID} = 'UETEHA6NN' )",
+        "AND(NOT({Track} = ''), NOT({Slack ID} = ''), {Slack ID} = 'UETEHA6NN', {Track} = 'Software Engineering' )",
     })
     //collect all the slack ids with its corresponding track
     .eachPage((records, fetchNextPage) => {
