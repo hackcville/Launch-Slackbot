@@ -209,7 +209,7 @@ slackInteractions.action({ type: "dialog_submission" }, (payload) => {
               Name: student_name,
               SlackID: payload.user.id,
               "Pace Rating": Number(payload.submission.pace),
-              "Misc Comments": Number(payload.submission.misc),
+              "Misc Comments": payload.submission.misc,
               "Lecture Length Rating": Number(payload.submission.lecture),
               "Understanding Rating": Number(payload.submission.understanding),
               "Group Rating": Number(payload.submission.group),

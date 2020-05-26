@@ -46,7 +46,8 @@ const scheduleMessages = async () => {
     .select({
       fields: ["Track", "Slack ID"],
       view: "Camille View",
-      filterByFormula: "AND(NOT({Track} = ''), NOT({Slack ID} = '') )",
+      filterByFormula:
+        "AND(NOT({Track} = ''), NOT({Slack ID} = ''),NOT({Track} = 'Advanced Softwared Engineering'), NOT({Track} = 'Advanced Data Science') )",
     })
     //collect all the slack ids with its corresponding track
     .eachPage((records, fetchNextPage) => {
