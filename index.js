@@ -107,7 +107,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
           label: "The lecture length ...",
           type: "select",
           name: "lecture",
-          placeholder: "1-5, 1 = Too long, 5 = Too short",
+          placeholder: "1-5, 1 = Too short, 5 = Too long",
           options: [
             { label: "1", value: 1 },
             { label: "2", value: 2 },
@@ -140,7 +140,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
             { label: "3", value: 3 },
             { label: "4", value: 4 },
             { label: "5", value: 5 },
-            { label: "not applicable", value: 0 },
+            { label: "not applicable", value: "" },
           ],
         },
         {
@@ -157,7 +157,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
           label: "How was today overall?",
           type: "select",
           name: "enjoyment",
-          placeholder: "1-5, 5 = Loved it, 1 = Hated it",
+          placeholder: "1-5,  1 = Hated it, 5 = Loved it",
           options: [
             { label: "1", value: 1 },
             { label: "2", value: 2 },
