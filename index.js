@@ -104,7 +104,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
           ],
         },
         {
-          label: "The lecture length ...",
+          label: "The lecture length...",
           type: "select",
           name: "lecture",
           placeholder: "1-5, 1 = Too short, 5 = Too long",
@@ -154,7 +154,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
           label: "I feel weak/confused about...",
           type: "text",
           name: "weakness",
-          placeholder: "max 150 characters",
+          hint: "max 150 characters",
         },
         {
           label: "How was today overall?",
