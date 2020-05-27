@@ -146,13 +146,15 @@ slackInteractions.action({ type: "button" }, (payload) => {
         },
         {
           label: "I feel strong on...",
-          type: "textarea",
+          type: "text",
           name: "strength",
+          hint: "max 150 characters",
         },
         {
           label: "I feel weak/confused about...",
-          type: "textarea",
+          type: "text",
           name: "weakness",
+          placeholder: "max 150 characters",
         },
         {
           label: "How was today overall?",
@@ -171,6 +173,7 @@ slackInteractions.action({ type: "button" }, (payload) => {
           label: "Anything to add?",
           type: "textarea",
           name: "misc",
+          optional: true,
         },
       ],
     }),
