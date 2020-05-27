@@ -40,7 +40,7 @@ const wait = (milliseconds) => {
 
 const scheduleMessages = async () => {
   const EveryStudentInfo = [];
-  const messageTime = new Date("2020-05-25T21:10:00Z");
+  const messageTime = new Date("2020-05-26T21:10:00Z");
 
   await base(TABLE_NAME)
     .select({
